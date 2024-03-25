@@ -1,6 +1,11 @@
 <template>
   <main :class="stylex(styles.container)">
     <Calendar />
+    <br />
+    <br />
+    <br />
+    <br />
+    <Calendar />
   </main>
 </template>
 

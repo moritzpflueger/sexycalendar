@@ -5,46 +5,34 @@
     <div :class="stylex(styles.daysGrid)">
       <h1 :class="stylex(styles.h1)">{{ currentMonthName }}</h1>
       <h2 :class="stylex(styles.h2)">{{ currentYear }}</h2>
-      <div
-        :class="[
-          stylex(styles.weekdays),
-          day.includes('Sun') && stylex(styles.sunday),
-          day.includes('Sat') && stylex(styles.saturday)
-        ]"
-        v-for="day in weekdays"
-        :key="day"
-      >
-        {{ day }}
-      </div>
-      <div
-        :class="[
-          stylex(styles.day),
-          day.isSaturday && stylex(styles.saturday),
-          day.isSunday && stylex(styles.sunday),
-          day.isToday && stylex(styles.today)
-        ]"
+      <Weekdays />
+      <Day
         v-for="day in paddedDaysOfMonth"
         :key="day.key"
-      >
-        {{ day.date }}
-      </div>
+        :day="day"
+        :holidayName="isHoliday(day.date) ? getHolidayName(day.date) : ''"
+      />
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup async>
 import { ref, computed } from 'vue'
 import stylex from '@stylexjs/stylex'
+import Weekdays from './Weekdays.vue'
+import Day from './Day.vue'
 
+const countryIsoCode = 'DE'
+const languageIsoCode = 'DE'
 const currentDate = ref(new Date())
 const currentMonth = computed(() => currentDate.value.getMonth())
 const currentYear = computed(() => currentDate.value.getFullYear())
-const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-const germanHolidays = ref(null)
+const germanHolidays = ref([])
 
-try {
-  const response = await fetch(
-    'https://openholidaysapi.org/PublicHolidays?countryIsoCode=DE&languageIsoCode=DE&validFrom=2022-01-01&validTo=2022-06-30',
+async function getHolidays() {
+  const baseUrl = 'https://openholidaysapi.org/PublicHolidays'
+  await fetch(
+    `${baseUrl}?countryIsoCode=${countryIsoCode}&languageIsoCode=${languageIsoCode}&validFrom=${currentYear.value}-01-01&validTo=${currentYear.value}-12-31`,
     {
       method: 'GET',
       headers: {
@@ -52,17 +40,27 @@ try {
       }
     }
   )
-  if (response.ok) {
-    const data = await response.json()
-    console.log(data)
-    germanHolidays.value = data.map((holiday) => ({
-      date: new Date(holiday.startDate),
-      name: holiday.name[0].text
-    }))
-    console.log(germanHolidays.value)
-  }
-} catch (error) {
-  console.error(error)
+    .then((res) => res.json())
+    .then((data) => {
+      germanHolidays.value = data.map((holiday) => {
+        return {
+          name: holiday.name[0].text,
+          date: new Date(holiday.startDate)
+        }
+      })
+    })
+}
+getHolidays()
+
+const isHoliday = (date) => {
+  return germanHolidays.value.some((holiday) => holiday.date.toDateString() === date.toDateString())
+}
+
+const getHolidayName = (date) => {
+  const holiday = germanHolidays.value.find(
+    (holiday) => holiday.date.toDateString() === date.toDateString()
+  )
+  return holiday ? holiday.name : ''
 }
 
 const currentMonthName = computed(() =>
@@ -79,7 +77,8 @@ const daysOfMonth = computed(() => {
     const isSunday = date.getDay() === 0
     const isToday = date.toDateString() === new Date().toDateString()
     return {
-      date: i + 1,
+      date: date,
+      label: i + 1,
       key: `${year}-${month}-${i + 1}`,
       isPadding: false,
       isSaturday,
@@ -95,7 +94,7 @@ const paddedDaysOfMonth = computed(() => {
   const paddingDays = firstDayOfMonth - 1 < 0 ? 6 : firstDayOfMonth - 1 // Adjust for Monday start
 
   for (let i = 0; i < paddingDays; i++) {
-    padding.push({ date: '', key: `padding-${i}`, isPadding: true })
+    padding.push({ date: new Date(), key: `padding-${i}`, isPadding: true })
   }
 
   return [...padding, ...daysOfMonth.value]
@@ -138,32 +137,7 @@ const styles = stylex.create({
     fontSize: '5vw',
     fontWeight: 'bold',
     padding: '1vw',
-    overflowX: 'auto',
-    overflowY: 'hidden',
     marginTop: '5vw'
-  },
-  weekdays: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '2vw',
-    fontSize: '3vw',
-    fontWeight: 'normal'
-  },
-  day: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '4vw'
-  },
-  saturday: {
-    color: 'blue' /* Light blue for Saturdays */
-  },
-  sunday: {
-    color: 'red' /* Light red for Sundays */
-  },
-  today: {
-    color: 'orangered !important' /* Light red for Sundays */
   }
 })
 </script>

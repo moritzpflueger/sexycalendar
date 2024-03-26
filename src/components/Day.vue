@@ -8,8 +8,8 @@
     ]"
   >
     <div>{{ day.label }}</div>
-    <div v-if="holidayName" :class="stylex(styles.holiday)">
-      {{ holidayName }}
+    <div v-if="isHoliday(day.date)" :class="stylex(styles.holiday)">
+      {{ getHolidayName(day.date) }}
     </div>
   </div>
 </template>
@@ -19,8 +19,19 @@ import stylex from '@stylexjs/stylex'
 
 const props = defineProps({
   day: Object,
-  holidayName: String
+  holidays: Array
 })
+
+const isHoliday = (date) => {
+  return props.holidays.some((holiday) => holiday.date.toDateString() === date.toDateString())
+}
+
+const getHolidayName = (date) => {
+  const holiday = props.holidays.find(
+    (holiday) => holiday.date.toDateString() === date.toDateString()
+  )
+  return holiday ? holiday.name : ''
+}
 </script>
 
 <script>
@@ -35,7 +46,7 @@ const styles = stylex.create({
     flexDirection: 'column',
     justifyContent: 'between',
     alignItems: 'center',
-    height: '6vw'
+    height: '4vw'
   },
   saturday: {
     color: 'blue'

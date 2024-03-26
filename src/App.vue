@@ -1,11 +1,6 @@
 <template>
   <main :class="stylex(styles.container)">
     <Calendar />
-    <br />
-    <br />
-    <br />
-    <br />
-    <Calendar />
   </main>
 </template>
 
@@ -17,7 +12,7 @@ import Calendar from './components/Calendar.vue'
 <script>
 const styles = stylex.create({
   container: {
-    padding: '5vw'
+    padding: '0'
   }
 })
 </script>

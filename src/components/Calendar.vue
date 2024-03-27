@@ -1,19 +1,25 @@
 <template>
   <div :class="stylex(styles.wrapper)">
-    <Month
+    <div
       v-for="month in months"
       :key="`month-${month.getFullYear()}-${month.getMonth()}`"
-      :ref="(el) => (monthRefs[`month-${month.getFullYear()}-${month.getMonth()}`] = el)"
-      :month="month"
-      :year="currentYear"
-      :holidays="germanHolidays"
-    />
+      :class="stylex(styles.monthContainer)"
+    >
+      <Canvas :month="month" />
+      <Month
+        :ref="(el) => (monthRefs[`month-${month.getFullYear()}-${month.getMonth()}`] = el)"
+        :month="month"
+        :year="currentYear"
+        :holidays="germanHolidays"
+      />
+    </div>
   </div>
 </template>
 
 <script setup async>
 import { ref, computed, onMounted } from 'vue'
 import stylex from '@stylexjs/stylex'
+import Canvas from './Canvas.vue'
 import Month from './Month.vue'
 
 const countryIsoCode = 'DE'
@@ -64,6 +70,11 @@ onMounted(() => {
 const styles = stylex.create({
   wrapper: {
     // backgroundColor: 'red'
+  },
+  monthContainer: {
+    position: 'relative',
+    width: '100%',
+    height: 'auto'
   }
 })
 </script>

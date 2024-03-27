@@ -28,33 +28,39 @@ function getEventPosition(event) {
 }
 
 function startDrawing(event) {
-  event.preventDefault()
-  isDrawing.value = true
-  const { x, y } = getEventPosition(event)
-  lastPosition.value = { x, y }
+  if (event.touches[0].touchType === 'stylus') {
+    event.preventDefault()
+    isDrawing.value = true
+    const { x, y } = getEventPosition(event)
+    lastPosition.value = { x, y }
+  }
 }
 
 function draw(event) {
-  event.preventDefault()
-  if (!isDrawing.value) return
-  const { x, y } = getEventPosition(event)
-  const ctx = canvasContainer.value.querySelector('canvas').getContext('2d')
+  if (event.touches[0].touchType === 'stylus') {
+    event.preventDefault()
+    if (!isDrawing.value) return
+    const { x, y } = getEventPosition(event)
+    const ctx = canvasContainer.value.querySelector('canvas').getContext('2d')
 
-  ctx.beginPath()
-  ctx.moveTo(lastPosition.value.x, lastPosition.value.y)
-  ctx.lineTo(x, y)
-  ctx.strokeStyle = 'red'
-  ctx.lineWidth = 3
-  ctx.stroke()
-  ctx.closePath()
+    ctx.beginPath()
+    ctx.moveTo(lastPosition.value.x, lastPosition.value.y)
+    ctx.lineTo(x, y)
+    ctx.strokeStyle = 'red'
+    ctx.lineWidth = 3
+    ctx.stroke()
+    ctx.closePath()
 
-  lastPosition.value = { x, y }
+    lastPosition.value = { x, y }
+  }
 }
 
-function stopDrawing() {
-  event.preventDefault()
-  if (isDrawing.value) saveDrawing()
-  isDrawing.value = false
+function stopDrawing(event) {
+  if (event.touches[0].touchType === 'stylus') {
+    event.preventDefault()
+    if (isDrawing.value) saveDrawing()
+    isDrawing.value = false
+  }
 }
 
 function setupEventListeners(canvas) {
@@ -113,9 +119,7 @@ const styles = stylex.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 10,
-    backgroundColor: 'green',
-    opacity: 0.5
+    zIndex: 10
   }
 })
 </script>

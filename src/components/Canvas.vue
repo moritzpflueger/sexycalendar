@@ -28,12 +28,14 @@ function getEventPosition(event) {
 }
 
 function startDrawing(event) {
+  event.preventDefault()
   isDrawing.value = true
   const { x, y } = getEventPosition(event)
   lastPosition.value = { x, y }
 }
 
 function draw(event) {
+  event.preventDefault()
   if (!isDrawing.value) return
   const { x, y } = getEventPosition(event)
   const ctx = canvasContainer.value.querySelector('canvas').getContext('2d')
@@ -50,6 +52,7 @@ function draw(event) {
 }
 
 function stopDrawing() {
+  event.preventDefault()
   if (isDrawing.value) saveDrawing()
   isDrawing.value = false
 }

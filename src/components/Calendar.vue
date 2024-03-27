@@ -32,15 +32,13 @@ function initMonths() {
 
 async function getHolidays() {
   const baseUrl = 'https://openholidaysapi.org/PublicHolidays'
-  await fetch(
-    `${baseUrl}?countryIsoCode=${countryIsoCode}&languageIsoCode=${languageIsoCode}&validFrom=${currentYear.value}-01-01&validTo=${currentYear.value}-12-31`,
-    {
-      method: 'GET',
-      headers: {
-        Accept: 'text/json'
-      }
+  const url = `${baseUrl}?countryIsoCode=${countryIsoCode}&languageIsoCode=${languageIsoCode}&validFrom=${currentYear.value}-01-01&validTo=${currentYear.value}-12-31`
+  await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'text/json'
     }
-  )
+  })
     .then((res) => res.json())
     .then((data) => {
       germanHolidays.value = data.map((holiday) => {

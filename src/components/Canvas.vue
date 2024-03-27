@@ -110,7 +110,9 @@ const styles = stylex.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 10
+    zIndex: 10,
+    backgroundColor: 'green',
+    opacity: 0.5
   }
 })
 </script>

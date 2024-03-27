@@ -1,2 +1,6 @@
 @import './base.css';
 @stylex stylesheet;
+
+:root {
+  user-select: none;
+}

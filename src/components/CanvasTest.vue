@@ -153,8 +153,8 @@ const styles = stylex.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 10,
-    border: '5px solid pink'
+    zIndex: 10
+    // border: '5px solid pink'
     // backgroundColor: 'lime'
   }
   // drawingSvg: {

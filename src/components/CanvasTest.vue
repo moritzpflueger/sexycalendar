@@ -57,7 +57,10 @@ function getEventPosition(event) {
 }
 
 function startDrawing(event) {
-  if (event.touches && event.touches[0].touchType === 'stylus') {
+  if (
+    event.type === 'mousedown' ||
+    (event.type === 'touchstart' && event.touches[0].touchType === 'stylus')
+  ) {
     event.preventDefault()
     isDrawing.value = true
     const { x, y } = getEventPosition(event)
@@ -70,26 +73,22 @@ function startDrawing(event) {
 }
 
 function draw(event) {
-  if (event.touches && event.touches[0].touchType === 'stylus') {
-    if (!isDrawing.value) return
-    event.preventDefault()
-    const { x, y } = getEventPosition(event)
-    lastPosition.value = { x, y }
-    const scaledX = x * scale.value
-    const scaledY = y * scale.value
-    // Start a new drawing with the initial "moveto" command
-    // drawingCommands.value(`M${scaledX} ${scaledY}`)
-    // Append line commands to the current drawing
-    drawingCommands.value[drawingCommands.value.length - 1] += ` L${x} ${y}`
-  }
+  if (!isDrawing.value) return
+  event.preventDefault()
+  const { x, y } = getEventPosition(event)
+  lastPosition.value = { x, y }
+  const scaledX = x * scale.value
+  const scaledY = y * scale.value
+  // Start a new drawing with the initial "moveto" command
+  // drawingCommands.value(`M${scaledX} ${scaledY}`)
+  // Append line commands to the current drawing
+  drawingCommands.value[drawingCommands.value.length - 1] += ` L${x} ${y}`
 }
 
 function stopDrawing(event) {
-  if (event.touches && event.touches[0].touchType === 'stylus') {
-    event.preventDefault()
-    isDrawing.value = false
-    saveDrawings()
-  }
+  event.preventDefault()
+  isDrawing.value = false
+  saveDrawings()
 }
 
 function saveDrawings() {

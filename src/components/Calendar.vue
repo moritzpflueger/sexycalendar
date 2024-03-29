@@ -5,7 +5,8 @@
       :key="`month-${month.getFullYear()}-${month.getMonth()}`"
       :class="stylex(styles.monthContainer)"
     >
-      <Canvas :month="month" />
+      <!-- <Canvas :month="month" /> -->
+      <CanvasTest :month="month" />
       <Month
         :ref="(el) => (monthRefs[`month-${month.getFullYear()}-${month.getMonth()}`] = el)"
         :month="month"
@@ -19,7 +20,8 @@
 <script setup async>
 import { ref, computed, onMounted } from 'vue'
 import stylex from '@stylexjs/stylex'
-import Canvas from './Canvas.vue'
+// import Canvas from './Canvas.vue'
+import CanvasTest from './CanvasTest.vue'
 import Month from './Month.vue'
 
 const countryIsoCode = 'DE'

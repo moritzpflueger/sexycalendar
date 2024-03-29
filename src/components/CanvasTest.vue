@@ -57,7 +57,7 @@ function getEventPosition(event) {
 }
 
 function startDrawing(event) {
-  if (event.touches || event.touches[0].touchType === 'stylus') {
+  if (event.touches && event.touches[0].touchType === 'stylus') {
     event.preventDefault()
     isDrawing.value = true
     const { x, y } = getEventPosition(event)
@@ -70,7 +70,7 @@ function startDrawing(event) {
 }
 
 function draw(event) {
-  if (event.touches || event.touches[0].touchType === 'stylus') {
+  if (event.touches && event.touches[0].touchType === 'stylus') {
     if (!isDrawing.value) return
     event.preventDefault()
     const { x, y } = getEventPosition(event)
@@ -85,7 +85,7 @@ function draw(event) {
 }
 
 function stopDrawing(event) {
-  if (event.touches || event.touches[0].touchType === 'stylus') {
+  if (event.touches && event.touches[0].touchType === 'stylus') {
     event.preventDefault()
     isDrawing.value = false
     saveDrawings()

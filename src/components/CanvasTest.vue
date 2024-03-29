@@ -57,33 +57,39 @@ function getEventPosition(event) {
 }
 
 function startDrawing(event) {
-  event.preventDefault()
-  isDrawing.value = true
-  const { x, y } = getEventPosition(event)
-  lastPosition.value = { x, y }
-  const scaledX = x * scale.value
-  const scaledY = y * scale.value
-  // Start a new drawing with the initial "moveto" command
-  drawingCommands.value.push(`M${x} ${y}`)
+  if (event.touches || event.touches[0].touchType === 'stylus') {
+    event.preventDefault()
+    isDrawing.value = true
+    const { x, y } = getEventPosition(event)
+    lastPosition.value = { x, y }
+    const scaledX = x * scale.value
+    const scaledY = y * scale.value
+    // Start a new drawing with the initial "moveto" command
+    drawingCommands.value.push(`M${x} ${y}`)
+  }
 }
 
 function draw(event) {
-  if (!isDrawing.value) return
-  event.preventDefault()
-  const { x, y } = getEventPosition(event)
-  lastPosition.value = { x, y }
-  const scaledX = x * scale.value
-  const scaledY = y * scale.value
-  // Start a new drawing with the initial "moveto" command
-  // drawingCommands.value(`M${scaledX} ${scaledY}`)
-  // Append line commands to the current drawing
-  drawingCommands.value[drawingCommands.value.length - 1] += ` L${x} ${y}`
+  if (event.touches || event.touches[0].touchType === 'stylus') {
+    if (!isDrawing.value) return
+    event.preventDefault()
+    const { x, y } = getEventPosition(event)
+    lastPosition.value = { x, y }
+    const scaledX = x * scale.value
+    const scaledY = y * scale.value
+    // Start a new drawing with the initial "moveto" command
+    // drawingCommands.value(`M${scaledX} ${scaledY}`)
+    // Append line commands to the current drawing
+    drawingCommands.value[drawingCommands.value.length - 1] += ` L${x} ${y}`
+  }
 }
 
 function stopDrawing(event) {
-  event.preventDefault()
-  isDrawing.value = false
-  saveDrawings()
+  if (event.touches || event.touches[0].touchType === 'stylus') {
+    event.preventDefault()
+    isDrawing.value = false
+    saveDrawings()
+  }
 }
 
 function saveDrawings() {

@@ -3,7 +3,7 @@
 </template>
 
 <script setup async>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import stylex from '@stylexjs/stylex'
 
 const props = defineProps(['month'])
@@ -28,7 +28,7 @@ function getEventPosition(event) {
 }
 
 function startDrawing(event) {
-  if (event.touches && event.touches[0].touchType === 'stylus') {
+  if (!event.touches || event.touches[0].touchType !== 'stylus') {
     event.preventDefault()
     isDrawing.value = true
     const { x, y } = getEventPosition(event)
@@ -37,7 +37,7 @@ function startDrawing(event) {
 }
 
 function draw(event) {
-  if (event.touches && event.touches[0].touchType === 'stylus') {
+  if (!event.touches || event.touches[0].touchType !== 'stylus') {
     event.preventDefault()
     if (!isDrawing.value) return
     const { x, y } = getEventPosition(event)
@@ -56,7 +56,7 @@ function draw(event) {
 }
 
 function stopDrawing(event) {
-  if (event.touches && event.touches[0].touchType === 'stylus') {
+  if (!event.touches || event.touches[0].touchType !== 'stylus') {
     event.preventDefault()
     if (isDrawing.value) saveDrawing()
     isDrawing.value = false
@@ -105,9 +105,56 @@ function loadDrawing() {
   }
 }
 
+function handleResize() {
+  const canvas = canvasContainer.value.querySelector('canvas')
+  if (!canvas) return
+
+  // Save the current canvas content as an image
+  const dataUrl = canvas.toDataURL()
+
+  // Create a temporary canvas to hold the original content
+  const tempCanvas = document.createElement('canvas')
+  const tempCtx = tempCanvas.getContext('2d')
+  tempCanvas.width = canvas.width
+  tempCanvas.height = canvas.height
+  const img = new Image()
+  img.onload = () => {
+    tempCtx.drawImage(img, 0, 0)
+
+    // Calculate the scaling factors for width and height
+    const widthScaleFactor = canvasContainer.value.offsetWidth / canvas.width
+    const heightScaleFactor = canvasContainer.value.offsetHeight / canvas.height
+
+    // Resize the original content while preserving detail
+    canvas.width = canvasContainer.value.offsetWidth
+    canvas.height = canvasContainer.value.offsetHeight
+    const ctx = canvas.getContext('2d')
+    ctx.imageSmoothingEnabled = false // Preserve sharpness
+
+    // Redraw the original content onto the resized canvas
+    ctx.drawImage(
+      tempCanvas,
+      0,
+      0,
+      tempCanvas.width,
+      tempCanvas.height,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    )
+  }
+  img.src = dataUrl
+}
+
 onMounted(() => {
   initializeWebGL()
   loadDrawing()
+  window.addEventListener('resize', handleResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
